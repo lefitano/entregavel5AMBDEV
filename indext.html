@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Interativa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .display {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .display .expression {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .display .result {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 25px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-number {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .btn-operator {
+            background: #e9ecef;
+            color: #1e3c72;
+        }
+
+        .btn-clear {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-equal {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .history {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .history h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.95em;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .clear-history {
+            background: #e9ecef;
+            color: #666;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .clear-history:hover {
+            background: #dee2e6;
+        }
+
+        @media (max-width: 500px) {
+            .calculator {
+                padding: 20px;
+            }
+
+            .btn {
+                padding: 20px;
+                font-size: 1.1em;
+            }
+
+            .display .result {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="header">
+            <h1>🧮 Calculadora</h1>
+            <p>Simples e poderosa</p>
+        </div>
+
+        <div class="display">
+            <div class="expression" id="expression"></div>
+            <div class="result" id="result">0</div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-clear" onclick="clearDisplay()">C</button>
+            <button class="btn btn-operator" onclick="appendOperator('/')">/</button>
+            <button class="btn btn-operator" onclick="appendOperator('*')">×</button>
+            <button class="btn btn-operator" onclick="deleteLast()">⌫</button>
+
+            <button class="btn btn-number" onclick="appendNumber('7')">7</button>
+            <button class="btn btn-number" onclick="appendNumber('8')">8</button>
+            <button class="btn btn-number" onclick="appendNumber('9')">9</button>
+            <button class="btn btn-operator" onclick="appendOperator('-')">-</button>
+
+            <button class="btn btn-number" onclick="appendNumber('4')">4</button>
+            <button class="btn btn-number" onclick="appendNumber('5')">5</button>
+            <button class="btn btn-number" onclick="appendNumber('6')">6</button>
+            <button class="btn btn-operator" onclick="appendOperator('+')">+</button>
+
+            <button class="btn btn-number" onclick="appendNumber('1')">1</button>
+            <button class="btn btn-number" onclick="appendNumber('2')">2</button>
+            <button class="btn btn-number" onclick="appendNumber('3')">3</button>
+            <button class="btn btn-operator" onclick="appendOperator('%')">%</button>
+
+            <button class="btn btn-number" onclick="appendNumber('0')">0</button>
+            <button class="btn btn-number" onclick="appendNumber('.')">.</button>
+            <button class="btn btn-equal" onclick="calculate()">=</button>
+        </div>
+
+        <div class="history">
+            <h3>📜 Histórico</h3>
+            <div id="history-list"></div>
+            <button class="clear-history" onclick="clearHistory()">Limpar Histórico</button>
+        </div>
+    </div>
+
+    <script>
+        let currentExpression = '';
+        let currentResult = '0';
+        let history = [];
+
+        function updateDisplay() {
+            document.getElementById('expression').textContent = currentExpression;
+            document.getElementById('result').textContent = currentResult;
+        }
+
+        function appendNumber(num) {
+            if (currentExpression === '0' && num !== '.') {
+                currentExpression = num;
+            } else {
+                currentExpression += num;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            const lastChar = currentExpression.slice(-1);
+            if (currentExpression && '+-/*%'.indexOf(lastChar) === -1) {
+                currentExpression += op;
+                updateDisplay();
+            }
+        }
+
+        function deleteLast() {
+            currentExpression = currentExpression.slice(0, -1);
+            if (!currentExpression) {
+                currentExpression = '';
+                currentResult = '0';
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentExpression = '';
+            currentResult = '0';
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                if (!currentExpression) return;
+                
+                const sanitized = currentExpression.replace(/×/g, '*');
+                const result = eval(sanitized);
+                
+                if (!isFinite(result)) {
+                    currentResult = 'Erro';
+                } else {
+                    currentResult = parseFloat(result.toFixed(8)).toString();
+                    addToHistory(currentExpression, currentResult);
+                }
+                
+                currentExpression = currentResult;
+                updateDisplay();
+            } catch (error) {
+                currentResult = 'Erro';
+                updateDisplay();
+            }
+        }
+
+        function addToHistory(expr, res) {
+            const item = {
+                expression: expr,
+                result: res,
+                timestamp: new Date().toLocaleTimeString('pt-BR')
+            };
+            
+            history.unshift(item);
+            if (history.length > 5) history.pop();
+            
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyList = document.getElementById('history-list');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="color: #999; text-align: center; padding: 10px;">Nenhum cálculo ainda</div>';
+                return;
+            }
+            
+            historyList.innerHTML = history.map(item => 
+                `<div class="history-item">${item.expression} = ${item.result} <span style="opacity: 0.6; font-size: 0.85em;">(${item.timestamp})</span></div>`
+            ).join('');
+        }
+
+        function clearHistory() {
+            history = [];
+            renderHistory();
+        }
+
+        renderHistory();
+    </script>
+</body>
+</html>
